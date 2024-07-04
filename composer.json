@@ -1,0 +1,23 @@
+{
+	"name": "vanderlee/correlator",
+	"description": "Correlation algorithm library",
+	"type": "library",
+	"keywords": ["correlation", "math"],
+	"homepage": "https://github.com/vanderlee/correlator",
+	"license": "MIT",
+	"support": {
+		"issues": "https://github.com/vanderlee/correlator/issues",
+		"source": "https://github.com/vanderlee/correlator/"
+	},
+	"require": {
+		"php": ">=7.1"
+	},
+	"require-dev": {
+		"phpunit/phpunit": "9.*"
+	},
+	"autoload": {
+		"psr-4": {
+			"Vanderlee\\correlator\\": "src/"
+		}
+	}
+}
