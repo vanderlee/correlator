@@ -1,6 +1,6 @@
 <?php
 
-namespace Correlator\Method;
+namespace Vanderlee\Correlator\Method;
 
 /**
  * Run the Chi-squared Goodness of Fit test

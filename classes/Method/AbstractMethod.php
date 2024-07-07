@@ -1,6 +1,8 @@
 <?php
 
-namespace Correlator\Method;
+namespace Vanderlee\Correlator\Method;
+
+use Vanderlee\Correlator\Correlator;
 
 /**
  * Makes correlating arrays easy.
@@ -12,7 +14,7 @@ abstract class AbstractMethod
 
     /**
      * List of scores
-     * @var \Correlator\Correlator
+     * @var Correlator
      */
     protected $correlator = null;
 
@@ -22,9 +24,9 @@ abstract class AbstractMethod
      *
      * You should have atleast 6 scores for a meaningful result.
      *
-     * @param \Correlator\Correlator $correlator
+     * @param Correlator $correlator
      */
-    public function __construct(\Correlator\Correlator &$correlator)
+    public function __construct(Correlator &$correlator)
     {
         $this->correlator = &$correlator;
     }

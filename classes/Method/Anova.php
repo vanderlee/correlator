@@ -1,13 +1,16 @@
 <?php
 
-namespace Correlator\Method;
+namespace Vanderlee\Correlator\Method;
+
+use Exception;
+use Vanderlee\Correlator\Correlator;
 
 /**
  * ANOVA One-way
  *
  * @author Martijn W. van der Lee
  */
-class Anova extends \Correlator\Method\AbstractMethod
+class Anova extends AbstractMethod
 {
 
     /**
@@ -27,10 +30,10 @@ class Anova extends \Correlator\Method\AbstractMethod
     /**
      * Calculate ANOVA One-way f-value
      *
-     * @param \Correlator\Correlator|float[] $other
+     * @param Correlator|float[] $other
      * @param boolean $is_sample true for Sample, false if entire Population
      * @return float [-1,1] where 0 indicates no correlation. Sign indicates positive/negative correlation.
-     * @throws \Exception
+     * @throws Exception
      */
     public function getValue($other, $is_sample = false)
     {

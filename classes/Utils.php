@@ -1,6 +1,6 @@
 <?php
 
-namespace Correlator;
+namespace Vanderlee\Correlator;
 
 /**
  * Utilities
@@ -210,23 +210,23 @@ abstract class Utils
     /**
      * Calculate the variance of an array.
      *
-     * @param float[] $A
-     * @param boolean $is_sample Sample (true) or population (false, default)
+     * @param float[] $a
+     * @param boolean $isSample Sample (true) or population (false, default)
      * @return float
      */
-    public static function variance($A, $is_sample = false, $mean = null)
+    public static function variance($a, $isSample = false, $mean = null)
     {
         if ($mean === null) {
-            $mean = self::mean($A);
+            $mean = self::mean($a);
         }
 
         $var = 0.;
-        foreach ($A as $item) {
+        foreach ($a as $item) {
             $dif = $item - $mean;
             $var += $dif * $dif;
         }
 
-        $var /= $is_sample ? count($A) - 1 : count($A);
+        $var /= $isSample ? count($a) - 1 : count($a);
 
         return $var;
     }

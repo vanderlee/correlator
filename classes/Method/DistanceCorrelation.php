@@ -1,6 +1,6 @@
 <?php
 
-namespace Correlator\Method;
+namespace Vanderlee\Correlator\Method;
 
 /**
  * Get the distance correlation

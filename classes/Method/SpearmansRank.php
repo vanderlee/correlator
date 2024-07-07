@@ -1,6 +1,8 @@
 <?php
 
-namespace Correlator\Method;
+namespace Vanderlee\Correlator\Method;
+
+use Vanderlee\Correlator\Utils;
 
 /**
  * Calculate Spearman's rho
@@ -25,8 +27,8 @@ class SpearmansRank extends \Correlator\Method\AbstractMethod
     {
         $n = count($other);
         $r = $this->getValue($other, $is_sample);
-        $t = \Correlator\Utils::pearsonsRToStudentT($r, $n);
-        return \Correlator\Utils::studentTToPValue($t, $n);
+        $t = Utils::pearsonsRToStudentT($r, $n);
+        return Utils::studentTToPValue($t, $n);
     }
 
     /**

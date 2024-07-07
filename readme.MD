@@ -2,6 +2,12 @@ Correlator
 ==========
 v0.1 - early alpha version; rewriting from aged codebase.
 
+# To do
+- Move Utils to Collection
+  - Cache all intermediate results where reasonable
+- Is $sample part of the collection or part of the method?
+- Method selector based on data definitions
+
 Introduction
 ------------
 Primarily intended to find the most influential factor in determining the
@@ -15,9 +21,8 @@ The method chose depends on the characteristics of influence factor.
 Installation
 ------------
 
-* Requires PHP 5.3 or above.
+* Requires PHP 8.0 or above.
 * No dependencies.
-* Just `require` and use.
 
 Usage example
 -------------
@@ -31,10 +36,27 @@ Usage example
 
 	echo $rho;
 
+
+    $scores = new Collection([1, 2, 3, 4, 5]);
+    $factor = new Collection([1, 2, 9, 4, 4]);
+
+    // Create based on full
+    $pearonsR = new PearsonsR($scores, $factor);
+
+    // standard interface
+    $pearonsR->correlation();
+    $pearonsR->probability();
+
+    // method specific interface
+    $pearsonsR->r();
+    $pearsonsR->studentT();
+    $pearsonsR->p();
+
+ 
 Further reading
 ---------------
 
-* A more in-depth explaination of the types of data used:
+* A more in-depth explanation of the types of data used:
   http://changingminds.org/explanations/research/measurement/types_data.htm
 
 Future directions

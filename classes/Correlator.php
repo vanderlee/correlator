@@ -1,6 +1,6 @@
 <?php
 
-namespace Correlator;
+namespace Vanderlee\Correlator;
 
 /**
  * Makes correlating arrays easy.
@@ -10,18 +10,20 @@ namespace Correlator;
 class Correlator
 {
 
-const POPULATION = 0x00000000;
+    const POPULATION = 0x00000000;
     const SAMPLE = 0x00000100; // for completeness; default
     const METHOD_PEARSONS_R = 0x01000000;
     const METHOD_SPEARMANS_RANK = 0x02000000;
     const METHOD_PEARSONS_CHI_SQUARED_GOODNESS_OF_FIT = 0x03000000;
     const METHOD_DISTANCE_CORRELATION = 0x04000000;
     const METHOD_ANOVA = 0x05000000;
+
     /**
      * METHOD_* constants to explicitely specify a method.
      * Masked 0xFF000000;
      */
     private static $method_bitmask = 0xFF000000;
+
     /**
      * Mapping of constants to classes.
      *
@@ -34,63 +36,6 @@ const POPULATION = 0x00000000;
         self::METHOD_DISTANCE_CORRELATION => '\Correlator\Method\DistanceCorrelation',
         self::METHOD_ANOVA => '\Correlator\Method\Anova',
     );
-
-    /**
-     * List of scores
-     *
-     * @var float[]
-     */
-    private $scores = [];
-
-    /**
-     * Matrix (linear!) of distances between scores.
-     *
-     * @var float[]
-     */
-    private $distanceMatrix = null;
-
-    /**
-     * Mean average
-     *
-     * @var float
-     */
-    private $mean = null;
-
-    /**
-     * Standard deviation for samples
-     *
-     * @var float
-     */
-    private $standardDeviationSample = null;
-
-    /**
-     * Standard deviation for population
-     *
-     * @var float
-     */
-    private $standardDeviationPopulation = null;
-
-    /**
-     * Fractional ranking of scores
-     *
-     * @var float[]
-     */
-    private $fractionalRanking = null;
-
-    /**
-     * Create a new classes with an array of scores to be correlated to
-     * any number of factors.
-     *
-     * You should have atleast 6 scores for a meaningful result.
-     *
-     * Scores are assumed to be atleast interval.
-     *
-     * @param float[] $scores
-     */
-    public function __construct($scores)
-    {
-        $this->setScores($scores);
-    }
 
     /**
      * Correlate according to the specified flags.
@@ -132,89 +77,6 @@ const POPULATION = 0x00000000;
         $is_sample = $flags & self::SAMPLE;
 
         return $Object->getP($array, $is_sample, $weights);
-    }
-
-    /**
-     * Get the scores
-     *
-     * @return float[]
-     */
-    public function getScores()
-    {
-        return $this->scores;
-    }
-
-    /**
-     * Set new scores
-     *
-     * @param type $scores
-     */
-    public function setScores($scores)
-    {
-        $this->scores = &$scores;
-
-        // Invalidate caches
-        $this->distanceMatrix = null;
-        $this->mean = null;
-        $this->standardDeviationPopulation = null;
-        $this->standardDeviationSample = null;
-        $this->fractionalRanking = null;
-    }
-
-    /**
-     * Get the number of scores
-     *
-     * @return integer[]
-     */
-    public function getCount()
-    {
-        return count($this->scores);
-    }
-
-    /**
-     * Get a distance matrix for the scores
-     *
-     * @return float[]
-     */
-    public function &getDistanceMatrix()
-    {
-        if ($this->distanceMatrix === null) {
-            $this->distanceMatrix = &\Correlator\Utils::arrayToDistanceMatrix($this->scores);
-        }
-        return $this->distanceMatrix;
-    }
-
-    /**
-     * Get the mean average
-     *
-     * @return float
-     */
-    public function getStandardDeviation($is_sample = false)
-    {
-        if ($is_sample) {
-            if ($this->standardDeviationSample === null) {
-                $this->standardDeviationSample = Utils::standardDeviation($this->scores, true, $this->getMean());
-            }
-            return $this->standardDeviationSample;
-        } else {
-            if ($this->standardDeviationPopulation === null) {
-                $this->standardDeviationPopulation = Utils::standardDeviation($this->scores, false, $this->getMean());
-            }
-            return $this->standardDeviationPopulation;
-        }
-    }
-
-    /**
-     * Get the mean average
-     *
-     * @return float
-     */
-    public function getMean()
-    {
-        if ($this->mean === null) {
-            $this->mean = Utils::mean($this->scores);
-        }
-        return $this->mean;
     }
 
     /**

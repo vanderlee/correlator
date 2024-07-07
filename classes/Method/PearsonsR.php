@@ -1,28 +1,56 @@
 <?php
 
-namespace Correlator\Method;
+namespace Vanderlee\Correlator\Method;
+
+use Exception;
+use Vanderlee\Correlator\Collection;
+use Vanderlee\Correlator\Utils;
 
 /**
  * Makes correlating arrays easy.
  *
  * @author Martijn W. van der Lee
  */
-class PearsonsR extends \Correlator\Method\AbstractMethod
+class PearsonsR implements Correlator
 {
+    /** @var Collection */
+    private $a;
+
+    /** @var Collection */
+    private $b;
+
+    /** @var bool */
+    private $sample;
+
+    public function __construct(Collection $a, Collection $b, bool $sample = false)
+    {
+        $this->a = $a;
+        $this->b = $b;
+        $this->sample = $sample;
+    }
+
+    public function correlation(): float
+    {
+        return $this->getR();
+    }
+
+    public function probability(): float
+    {
+        return $this->getP();
+    }
 
     /**
      * Get the P-value for a Pearson product-moment correlation
      *
-     * @param self|float[] $other
-     * @param boolean $is_sample true for Sample, false if entire Population
-     * @return float [-1,1] where 0 indicates no correlation. Sign indicates positive/negative correlation.
+     * @return float
+     * @throws Exception
      */
-    public function getP($other, $is_sample = false)
+    private function getP(): float
     {
-        $n = count($other);
-        $r = $this->getValue($other, $is_sample);
-        $t = \Correlator\Utils::pearsonsRToStudentT($r, $n);
-        return \Correlator\Utils::studentTToPValue($t, $n);
+        $n = count($this->a);
+        $r = $this->getR();
+        $t = Utils::pearsonsRToStudentT($r, $n);
+        return Utils::studentTToPValue($t, $n);
     }
 
     /**
@@ -30,40 +58,25 @@ class PearsonsR extends \Correlator\Method\AbstractMethod
      * (also known as Pearson's R, PPMCC and PCC)
      * Use for monotonic, linear intervals of samples of the population data.
      *
-     * @param \Correlator\Correlator|float[] $other
-     * @param boolean $is_sample true for Sample, false if entire Population
      * @return float [-1,1] where 0 indicates no correlation. Sign indicates positive/negative correlation.
-     * @throws \Exception
+     * @throws Exception
      */
-    public function getValue($other, $is_sample = false)
+    private function getR()
     {
-        $X = $this->correlator->getScores();
-
-        if ($other instanceof \Correlator\Correlator) {
-            $Y = $other->getScores();
-        } else {
-            $Y = &$other;
+        if (count($this->a) !== count($this->b)) {
+            // @todo better defined exception
+            throw new Exception('Different lengths');
         }
 
-        $count = count($X);
+        $count = count($this->a);
 
-        if (count($Y) !== $count) {
-            throw new \Exception('Different lengths');
-        }
+        $sampleCount = $this->sample ? $count - 1 : $count;
+        $sop = $this->a->sumOfProduct($this->b);
 
-        $mean_X = $this->correlator->getMean();
-        $stddev_X = $this->correlator->getStandardDeviation($is_sample);
-
-        $mean_Y = \Correlator\Utils::mean($Y);
-        $stddev_Y = \Correlator\Utils::standardDeviation($Y, $is_sample, $mean_Y);
-
-        if ($is_sample) {
-            $r = (\Correlator\Utils::sumOfProducts($X, $Y) - ($count * $mean_X * $mean_Y)) / (($count - 1) * $stddev_X * $stddev_Y);
-        } else {
-            $r = (\Correlator\Utils::sumOfProducts($X, $Y) - ($count * $mean_X * $mean_Y)) / ($count * $stddev_X * $stddev_Y);
-        }
-
-        return $r;
+        // @todo move sumOfProducts to Collection
+        return (Utils::sumOfProducts($this->a->scores(), $this->b->scores())
+                - ($count * $this->a->mean() * $this->b->mean())
+            )
+            / ($sampleCount * $this->a->stddev() * $this->b->stddev());
     }
-
 }
